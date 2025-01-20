@@ -1,32 +1,33 @@
-apiversion: source.toolkit.fluxcd.io/v1
+---
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
   name: fluxcd-aks-repo
   namespace: flux-system
 spec:
   interval: 1m
+  url: https://github.com/Charungooa/fluxcd-aks-repo.git
   ref:
     branch: main
-  url: https://github.com/Charungooa/fluxcd-aks-repo.git
-
 ---
-
-apiversion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: my-nginx
   namespace: flux-system
 spec:
-  releaseName: my-nginx
   interval: 1m
+  releaseName: my-nginx
   chart:
     spec:
+      # Path to your chart within the *same* GitRepository
+      # Adjust as needed (for example: ./charts/my-nginx-chart)
       chart: ./charts/my-nginx-chart
       sourceRef:
         kind: GitRepository
         name: fluxcd-aks-repo
-      interval: 1m
+      version: "*"
   values:
-    replicaCount: 2
+    replicaCount: 1
     service:
       type: LoadBalancer
